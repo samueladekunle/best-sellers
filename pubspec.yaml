@@ -23,3 +23,16 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/config/config.json
+
+  fonts:
+    - family: NYTFranklin
+      fonts:
+       - asset: assets/fonts/NYTFranklin-Semibold.ttf
+  
+flutter_icons:
+  image_path: "assets/icons/icon.png"
+  android: true
+  ios: true
