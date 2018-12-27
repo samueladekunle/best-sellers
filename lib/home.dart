@@ -2,6 +2,7 @@ import "dart:convert";
 
 import "package:flutter/material.dart";
 
+import "./config.dart";
 import "./categories_list.dart";
 
 class Home extends StatefulWidget {
@@ -10,18 +11,16 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  String _apiBase, _apiKey;
-
-  Future<Null> _loadConfig() async {
+  Future<Config> _loadConfig() async {
     final String config = await DefaultAssetBundle.of(context).loadString("assets/config/config.json");
-    _apiBase = json.decode(config)["base"];
-    _apiKey = json.decode(config)["key"];
+    final String base = json.decode(config)["base"];
+    final String key = json.decode(config)["key"];
+    return Config(base: base, key: key);
   }
 
   @override
   void initState() {
     super.initState();
-    _loadConfig();
   }
 
   @override
@@ -30,9 +29,17 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         title: Text("The New York Times Best Sellers"),
       ),
-      body: CategoriesList(
-        apiBase: _apiBase,
-        apiKey: _apiKey,
+      body: FutureBuilder(
+        future: _loadConfig(),
+        builder: (BuildContext context, AsyncSnapshot<Config> snapshot) {
+          if (snapshot.hasData) {
+            return CategoriesList(
+              config: snapshot.data,
+            );
+          }
+
+          return Center(child: CircularProgressIndicator());
+        }
       ),
     );
   }
