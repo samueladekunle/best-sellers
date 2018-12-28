@@ -98,15 +98,15 @@ class _CategoriesListState extends State<CategoriesList> {
     }
 
     return RefreshIndicator(
-        onRefresh: () async {
-          await _updateCategories();
+      onRefresh: () async {
+        await _updateCategories();
+      },
+      child: ListView.separated(
+        separatorBuilder: (BuildContext context, int index) {
+          return Divider(color: Colors.black);
         },
-        child: ListView.separated(
-          separatorBuilder: (BuildContext context, int index) {
-            return Divider(color: Colors.black);
-          },
-          itemCount: _categories.length,
-          itemBuilder: (BuildContext context, int index) {
+        itemCount: _categories.length,
+        itemBuilder: (BuildContext context, int index) {
             final Map<String, dynamic> category = _categories[index];
             return ListTile(title: Text(category["display_name"]));
         },
