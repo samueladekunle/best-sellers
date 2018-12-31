@@ -6,6 +6,7 @@ import "package:http/http.dart" as http;
 
 import "./model/config.dart";
 import "./model/categories_list_item.dart";
+import "./books_list.dart";
 
 class CategoriesList extends StatefulWidget {
   CategoriesList({Key key, this.config}) : super(key: key);
@@ -53,7 +54,6 @@ class _CategoriesListState extends State<CategoriesList> {
       setState(() => _items = null);
     }
     final List<Map<String, dynamic>> categories = await _fetchCategories();
-    print("categories.length: ${categories.length}");
     if (categories.length > 0) {
       items = categories.map((Map<String, dynamic> category) {
         return CategoriesListItem(
@@ -126,12 +126,10 @@ class _CategoriesListState extends State<CategoriesList> {
                     title: Text(item.displayName),
                   );
                 },
-                body: Container(
-                  height: 200,
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                ),
+                body: item.isExpanded ? BooksList(
+                  listNameEncoded: item.listNameEncoded,
+                  config: widget.config,
+                ) : Container(),
                 isExpanded: item.isExpanded,
               );
             }).toList(),
