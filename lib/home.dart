@@ -2,7 +2,7 @@ import "dart:convert";
 
 import "package:flutter/material.dart";
 
-import "./config.dart";
+import "./model/config.dart";
 import "./categories_list.dart";
 
 class Home extends StatefulWidget {

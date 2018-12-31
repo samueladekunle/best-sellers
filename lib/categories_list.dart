@@ -4,7 +4,9 @@ import "package:flutter/material.dart";
 import "package:shared_preferences/shared_preferences.dart";
 import "package:http/http.dart" as http;
 
-import "./config.dart";
+import "./model/config.dart";
+import "./model/categories_list_item.dart";
+import "./books_list.dart";
 
 class CategoriesList extends StatefulWidget {
   CategoriesList({Key key, this.config}) : super(key: key);
@@ -16,7 +18,7 @@ class CategoriesList extends StatefulWidget {
 
 class _CategoriesListState extends State<CategoriesList> {
   String _base, _key, _message;
-  List<Map<String, dynamic>> _categories;
+  List<CategoriesListItem> _items;
   BuildContext _context;
 
   Future<List<Map<String, dynamic>>> _fetchCategories() async {
@@ -45,19 +47,29 @@ class _CategoriesListState extends State<CategoriesList> {
     return categories;
   }
 
-  Future<Null> _updateCategories() async {
-    if (_categories != null) {
+  Future<Null> _updateItems() async {
+    List<CategoriesListItem> items = List<CategoriesListItem>();
+    if (_items != null) {
       _message = null;
-      setState(() => _categories = null);
+      setState(() => _items = null);
     }
     final List<Map<String, dynamic>> categories = await _fetchCategories();
-    setState(() => _categories = categories);
+    if (categories.length > 0) {
+      items = categories.map((Map<String, dynamic> category) {
+        return CategoriesListItem(
+          displayName: category["display_name"],
+          listNameEncoded: category["list_name_encoded"],
+          isExpanded: false,
+        );
+      }).toList();
+    }
+    setState(() => _items = items);
     if (_message != null) {
       Scaffold.of(_context).showSnackBar(SnackBar(
         content: Text(_message),
         action: SnackBarAction(
           label: "RETRY",
-          onPressed: _updateCategories,
+          onPressed: _updateItems,
           textColor: Colors.blue[700],
         ),
       ));
@@ -69,19 +81,19 @@ class _CategoriesListState extends State<CategoriesList> {
     super.initState();
     _base = widget.config.base;
     _key = widget.config.key;
-    _updateCategories();
+    _updateItems();
   }
 
   @override
   Widget build(BuildContext context) {
     _context = context;
-    if (_categories == null) {
+    if (_items == null) {
       return Center(
         child: CircularProgressIndicator(),
       );
     }
 
-    if (_categories.length == 0) {
+    if (_items.length == 0) {
       final String message = "No Internet Connection";
       return Center(
         child: Column(
@@ -90,7 +102,7 @@ class _CategoriesListState extends State<CategoriesList> {
             Text(message),
             RaisedButton(
               child: Text("RETRY"),
-              onPressed: _updateCategories,
+              onPressed: _updateItems,
             ),
           ],
         ),
@@ -98,18 +110,31 @@ class _CategoriesListState extends State<CategoriesList> {
     }
 
     return RefreshIndicator(
-        onRefresh: () async {
-          await _updateCategories();
-        },
-        child: ListView.separated(
-          separatorBuilder: (BuildContext context, int index) {
-            return Divider(color: Colors.black);
-          },
-          itemCount: _categories.length,
-          itemBuilder: (BuildContext context, int index) {
-            final Map<String, dynamic> category = _categories[index];
-            return ListTile(title: Text(category["display_name"]));
-        },
+      onRefresh: () async {
+        await _updateItems();
+      },
+      child: ListView(
+        children: [
+          ExpansionPanelList(
+            expansionCallback: (int index, bool isExpanded) {
+              setState(() => _items[index].isExpanded = !_items[index].isExpanded);
+            },
+            children: _items.map((CategoriesListItem item) {
+              return ExpansionPanel(
+                headerBuilder: (BuildContext context, bool isExpanded) {
+                  return ListTile(
+                    title: Text(item.displayName),
+                  );
+                },
+                body: item.isExpanded ? BooksList(
+                  listNameEncoded: item.listNameEncoded,
+                  config: widget.config,
+                ) : Container(),
+                isExpanded: item.isExpanded,
+              );
+            }).toList(),
+          ),
+        ],
       ),
     );
   }
