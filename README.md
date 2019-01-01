@@ -1,16 +1,18 @@
-# best_sellers
+# Best Sellers
 
 An unofficial mobile application for the New York Times Best Sellers.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.io/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.io/docs/cookbook)
-
 For help getting started with Flutter, view our 
-[online documentation](https://flutter.io/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+[online documentation](https://flutter.io/docs).
+
+## Installation
+
+Android - [download the apk](https://github.com/samueladekunle/best-sellers/releases/download/v0.1.0/app-release.apk) (5.47 MB)
+
+## LICENSE
+
+This project is distributed under the [MIT License](./LICENSE).
+
+The New York Times logo is a trademark of The New York Times Company.
