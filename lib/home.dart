@@ -28,6 +28,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         title: Text("The New York Times Best Sellers"),
+        centerTitle: true,
       ),
       body: FutureBuilder(
         future: _loadConfig(),
